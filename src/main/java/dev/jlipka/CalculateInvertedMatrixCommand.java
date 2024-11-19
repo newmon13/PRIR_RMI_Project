@@ -6,6 +6,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class CalculateInvertedMatrixCommand implements Command<double[][]>{
+    String UNIQUE_BINDING_NAME = "matrix.calculator";
     private final MatrixCalculator matrixCalculator;
     private final double[][] matrix;
     private final int threads;

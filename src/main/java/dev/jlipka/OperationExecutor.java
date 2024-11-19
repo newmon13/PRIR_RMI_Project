@@ -3,7 +3,7 @@ package dev.jlipka;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
-public class MatrixOperationExecutor {
+public class OperationExecutor {
     Command<?> command;
 
     void setCommand(Command<?> command) {

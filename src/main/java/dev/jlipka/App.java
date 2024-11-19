@@ -13,13 +13,18 @@ public class App {
         };
 
         CalculateInvertedMatrixCommand calculateCommand = new CalculateInvertedMatrixCommand(matrix, 4);
-        MatrixOperationExecutor executor = new MatrixOperationExecutor();
+        OperationExecutor executor = new OperationExecutor();
         executor.setCommand(calculateCommand);
         matrix = (double[][]) executor.executeOperation();
         PrintMatrixCommand printCommand = new PrintMatrixCommand(matrix);
         executor.setCommand(printCommand);
         String result = (String) executor.executeOperation();
         System.out.println(result);
+
+        AddCommand addCommand = new AddCommand(2,2);
+        executor.setCommand(addCommand);
+        System.out.println(executor.executeOperation());
+
 
     }
 }

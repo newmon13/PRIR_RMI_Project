@@ -22,4 +22,51 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.2</version>
+        <executions>
+          <!-- Server -->
+          <execution>
+            <id>server-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <classifier>server</classifier>
+              <includes>
+                <include>dev/jlipka/MatrixCalculatorImpl.class</include>
+                <include>dev/jlipka/SimpleCalculator.class</include>
+                <include>dev/jlipka/Server.class</include>
+              </includes>
+            </configuration>
+          </execution>
+
+          <!-- Client -->
+          <execution>
+            <id>client-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <classifier>client</classifier>
+              <includes>
+                <include>dev/jlipka/App.class</include>
+                <include>dev.jlipka/CalculateInvertedMatrixCommand.class</include>
+                <include>dev.jlipka/PrintMatrixCommand.class</include>
+                <include>dev.jlipka/AddCommand.class</include>
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

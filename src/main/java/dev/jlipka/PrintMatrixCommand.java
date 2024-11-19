@@ -6,6 +6,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class PrintMatrixCommand implements Command<String>{
+    String UNIQUE_BINDING_NAME = "matrix.calculator";
     MatrixCalculator matrixCalculator;
     double[][] matrix;
 
