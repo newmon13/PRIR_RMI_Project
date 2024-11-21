@@ -12,6 +12,30 @@ public class MatrixCalculatorImpl implements MatrixCalculator {
     private int threadCount;
     private double[][] augmentedMatrix;
 
+
+    @Override
+    public double[][] invertSequential(double[][] matrix) throws RemoteException {
+        this.matrix = matrix;
+        this.size = matrix.length;
+
+        if (!isSquareMatrix(matrix)) {
+            throw new IllegalArgumentException("Matrix must be square");
+        }
+
+        initializeAugmentedMatrix();
+
+        for (int i = 0; i < size; i++) {
+            performPivoting(i);
+            performElimination(i, true);
+        }
+
+        for (int i = size - 1; i >= 0; i--) {
+            performElimination(i, false);
+        }
+
+        return extractInvertedMatrix();
+    }
+
     private boolean isSquareMatrix(double[][] matrix) {
         if (matrix == null) return false;
         for (double[] row : matrix) {
@@ -20,7 +44,44 @@ public class MatrixCalculatorImpl implements MatrixCalculator {
         return true;
     }
 
-    public double[][] invert(double[][] matrix, int threadCount) throws InterruptedException {
+    private void initializeAugmentedMatrix() {
+        augmentedMatrix = new double[size][2 * size];
+        for (int i = 0; i < size; i++) {
+            System.arraycopy(matrix[i], 0, augmentedMatrix[i], 0, size);
+            augmentedMatrix[i][i + size] = 1.0;
+        }
+    }
+
+    private void performPivoting(int pivotRow) {
+        double pivot = augmentedMatrix[pivotRow][pivotRow];
+        if (Math.abs(pivot) < 1e-10) {
+            throw new ArithmeticException("Matrix is singular");
+        }
+
+        for (int j = 0; j < 2 * size; j++) {
+            augmentedMatrix[pivotRow][j] /= pivot;
+        }
+    }
+
+    private void performElimination(int pivotRow, boolean isForward) {
+        for (int i = 0; i < size; i++) {
+            if (i != pivotRow) {
+                eliminateEntry(pivotRow, isForward, i);
+            }
+        }
+    }
+
+    private void eliminateEntry(int pivotRow, boolean isForward, int currentRow) {
+        if ((isForward && currentRow > pivotRow) || (!isForward && currentRow < pivotRow)) {
+            double factor = augmentedMatrix[currentRow][pivotRow];
+            for (int j = 0; j < 2 * size; j++) {
+                augmentedMatrix[currentRow][j] -= factor * augmentedMatrix[pivotRow][j];
+            }
+        }
+    }
+
+    @Override
+    public double[][] invertParallel(double[][] matrix, int threadCount) throws InterruptedException, RemoteException {
         this.matrix = matrix;
         this.size = matrix.length;
         this.threadCount = threadCount;
@@ -44,14 +105,6 @@ public class MatrixCalculatorImpl implements MatrixCalculator {
         }
 
         return extractInvertedMatrix();
-    }
-
-    private void initializeAugmentedMatrix() {
-        augmentedMatrix = new double[size][2 * size];
-        for (int i = 0; i < size; i++) {
-            System.arraycopy(matrix[i], 0, augmentedMatrix[i], 0, size);
-            augmentedMatrix[i][i + size] = 1.0;
-        }
     }
 
     private void performParallelPivoting(int pivotRow) throws InterruptedException {
@@ -79,12 +132,7 @@ public class MatrixCalculatorImpl implements MatrixCalculator {
             if (i != pivotRow) {
                 final int currentRow = i;
                 executor.execute(() -> {
-                    if ((isForward && currentRow > pivotRow) || (!isForward && currentRow < pivotRow)) {
-                        double factor = augmentedMatrix[currentRow][pivotRow];
-                        for (int j = 0; j < 2 * size; j++) {
-                            augmentedMatrix[currentRow][j] -= factor * augmentedMatrix[pivotRow][j];
-                        }
-                    }
+                    eliminateEntry(pivotRow, isForward, currentRow);
                     latch.countDown();
                 });
             }
