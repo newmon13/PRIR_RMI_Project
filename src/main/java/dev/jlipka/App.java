@@ -19,35 +19,17 @@ public class App {
     }
 
     public static void main( String[] args ) throws NotBoundException, RemoteException, InterruptedException {
-        double[][] matrix  = generateMatrix(1000);
+        double[][] matrix  = generateMatrix(2000);
         OperationExecutor executor = new OperationExecutor();
-
         Command<double[][]> parallelCommand = new CalculateInvertedMatrixParallelCommand(matrix, 8);
         Command<double[][]> sequentialCommand = new CalculateInvertedMatrixSequentialCommand(matrix);
-
         TimedCommand<double[][]> timedParallelCommand = new TimedCommand<>(parallelCommand);
         TimedCommand<double[][]> timedSequentialCommand = new TimedCommand<>(sequentialCommand);
         executor.setCommand(timedParallelCommand);
         matrix = (double[][]) executor.executeOperation();
         System.out.println(timedParallelCommand.getExecutionTime());
-
         executor.setCommand(timedSequentialCommand);
         matrix = (double[][]) executor.executeOperation();
         System.out.println(timedSequentialCommand.getExecutionTime());
-
-//
-//
-//        PrintMatrixCommand printCommand = new PrintMatrixCommand(matrix);
-//        executor.setCommand(printCommand);
-//        String result = (String) executor.executeOperation();
-//
-//        System.out.println(result);
-//        System.out.println(timedCommand.getExecutionTime());
-//
-//        AddCommand addCommand = new AddCommand(2,2);
-//        executor.setCommand(addCommand);
-//        System.out.println(executor.executeOperation());
-
-
     }
 }

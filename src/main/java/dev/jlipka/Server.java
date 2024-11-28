@@ -13,7 +13,7 @@ public class Server {
     private static final String UNIQUE_BINDING_NAME_SIMPLE_CALCULATOR = "simple.calculator";
 
     public static void main(String[] args) throws RemoteException, AlreadyBoundException, InterruptedException, NotBoundException {
-        MatrixCalculatorImpl matrixCalculator = new MatrixCalculatorImpl();
+        MatrixCalculator matrixCalculator = new MatrixInverter();
         SimpleCalculatorImpl simpleCalculator = new SimpleCalculatorImpl();
 
         final Registry registry = LocateRegistry.createRegistry(2732);

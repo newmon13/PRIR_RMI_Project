@@ -15,13 +15,7 @@ public class AddCommand implements Command<Integer> {
     public AddCommand(int a, int b) throws RemoteException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(2732);
         Remote remoteObj = registry.lookup(UNIQUE_BINDING_NAME);
-        if (remoteObj instanceof SimpleCalculator) {
-            @SuppressWarnings("unchecked")
-            SimpleCalculator<Integer> calculator = (SimpleCalculator<Integer>) remoteObj;
-            this.simpleCalculator = calculator;
-        } else {
-            throw new IllegalArgumentException("Remote object is not a SimpleCalculator");
-        }
+        this.simpleCalculator = (SimpleCalculator<Integer>) remoteObj;
         this.a = a;
         this.b = b;
     }
